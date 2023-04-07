@@ -344,7 +344,7 @@ def das_downloader(event_df, this_id, cab):
 
 
 #For sintela fiberroute and calibration files
-def fiber_channel_locator(das_data, attrs, fiber_file, cal_file, chan_spac = 6.3, num_chans = 1750, save_file = False):
+def fiber_channel_locator(das_data, attrs, fiber_file, cal_file, chan_spac = 6.3, num_chans = 1750, save_file = False, fname = 'interpolated_channel_locations.csv'):
     fiber_location = pd.read_csv(fiber_file, header=1)
     fiber_calibration = pd.read_csv(cal_file, header=1)
     fiber_distance = []
@@ -438,7 +438,7 @@ def fiber_channel_locator(das_data, attrs, fiber_file, cal_file, chan_spac = 6.3
         
         chan_interp_frame = pd.DataFrame(data = interp_channel_dict)
 
-        chan_interp_frame.to_csv('interpolated_channel_locations.csv', index=False)
+        chan_interp_frame.to_csv(fname, index=False)
         
     
     return fiber_location, fiber_calibration, flat_x, flat_y
