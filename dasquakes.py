@@ -288,12 +288,19 @@ def fk_analysis(t0, draw_figure = True,downsamplefactor=5,cable = 'whidbey', rec
 
 #Function that returns the DAS data according to USGS earthquake events
 
-def das_downloader(event_df, this_id, cab):
-    this_event = event_df[event_df.id==this_id]
-    t0 = this_event['time'].iloc[0]
+def das_downloader(event_df, this_id, cab, t0 = datetime.datetime(2022, 10, 23, 4, 49, 0), record_length = 1):
+    
+#     if event_df and this_id == None:
+#         t0 = t0
+        
+#     else:
+#         print('here')
+#         this_event = event_df[event_df.id==this_id]
+#         t0 = this_event['time'].iloc[0]
+        
 
     cable = cab
-    record_length = 1 #minutes
+    record_length = record_length #minutes
 
     try:
         if cable == 'seadasn':
