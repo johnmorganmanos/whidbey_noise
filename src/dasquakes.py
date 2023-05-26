@@ -31,17 +31,26 @@ import csv
 
 def data_wrangler(cable,record_length,t0):
     if cable == 'seadasn':
-        prefix = 'seadasn'
-        network_name = 'SeaDAS-N'
-        if t0 < datetime.datetime(2022, 6, 20, 0, 0, 0):
-            datastore='/data/data0/seadasn_2022-03-17_2022-06-20/'
-        else:
-            datastore='/data/data7/seadasn/'
+            prefix = 'seadasn'
+            network_name = 'SeaDAS-N'
+            if t0 < datetime.datetime(2022, 6, 20, 0, 0, 0):
+                datastore='/data/data0/seadasn_2022-03-17_2022-06-20/'
+            elif t0 > datetime.datetime(2022, 6, 20, 0, 0, 0) and t0 < datetime.datetime(2022, 10, 6, 0, 0, 0):
+                datastore='/data/data7/seadasn_2022-06-21_2022-10-06/'
+            elif t0 > datetime.datetime(2022, 11, 1, 0, 0, 0) and t0 < datetime.datetime(2022, 11, 5, 0, 0, 0):
+                datastore='/data/data4/seadasn_2021-11-01_2021-11-05/'
+            elif t0 > datetime.datetime(2022, 10, 13, 0, 0, 0) and t0 < datetime.datetime(2022, 11, 1, 0, 0, 0):
+                datastore='/data/data1/seadasn_2021-10-13_2021-11-01/'
 
-    elif cable == 'whidbey':
-        prefix = 'whidbey'
-        network_name='Whidbey-DAS'
-        datastore = '/data/data5/Converted/'
+        elif cable == 'whidbey':
+            prefix = 'whidbey'
+            network_name='Whidbey-DAS'
+            
+            if t0 < datetime.datetime(2022, 10, 23, 4, 49, 0):
+                datastore = '/data/data5/Converted/'
+                
+            elif t0 > datetime.datetime(2022, 10, 23, 4, 49, 0):
+                datastore = '/data/data6/whidbey/'
         
     return prefix, network_name, datastore
 
