@@ -42,7 +42,7 @@ def data_wrangler(cable,record_length,t0):
             elif t0 > datetime.datetime(2022, 10, 13, 0, 0, 0) and t0 < datetime.datetime(2022, 11, 1, 0, 0, 0):
                 datastore='/data/data1/seadasn_2021-10-13_2021-11-01/'
 
-        elif cable == 'whidbey':
+    elif cable == 'whidbey':
             prefix = 'whidbey'
             network_name='Whidbey-DAS'
             
@@ -71,15 +71,20 @@ def get_file_number(pth,prefix,t0,verbose=False):
     datestr = '{d.year}-{d.month:02}-{d.day:02}_{d.hour:02}-{d.minute:02}'.format(d=t0)
 
     file = f"{pth}{prefix}_{datestr}*.h5"
+
     if verbose:
         print(file)
 
     if len(glob.glob(file)) > 0:
         file_list = glob.glob(file)[0]
 #         print(glob.glob(file))
-        file_number = file_list.split('_')[-1]
-        file_number = file_number.split('.')[0]
-        file_number = int(file_number)
+        file_number = file_list.split('_')
+        if len(file_number) == 5:
+            file_number = file_list.split('_')[-1]
+            file_number = file_number.split('.')[0]   
+            file_number = int(file_number)
+        else:
+            file_number = ''
         return file_number
     else:
         return -1
@@ -115,16 +120,29 @@ def open_sintela_file(file_base_name,t0,pth,
     
     dt = datetime.timedelta(minutes=1) # Assume one minute file duration
     this_files_date = t0
+    date_str = this_files_date.strftime("%Y-%m-%d_%H-%M")
     
-    for i in range(number_of_files):
+    for name in glob.glob(pth+'whidbey_'+date_str+'*'):
 
+        date_wanted = name.split('_')[1]+'_'+name.split('_')[2]
+
+    this_files_date = datetime.datetime.strptime(date_wanted, "%Y-%m-%d_%H-%M-%S")
+    for i in range(number_of_files):
+        
         file_number = get_file_number(pth,file_base_name,this_files_date,verbose=verbose)
         if file_number == -1:
             raise ValueError('Failed to find file number.')
 #             return [-1], [-1], [-1]
-        date_str = this_files_date.strftime("%Y-%m-%d_%H-%M") + "-00"
-        this_file = f'{pth}{file_base_name}_{date_str}_UTC_{file_number:06}.h5'
-        
+        date_str = this_files_date.strftime("%Y-%m-%d_%H-%M-%S")
+
+        if file_number == '':
+
+            this_file = f'{pth}{file_base_name}_{date_str}_UTC.h5'
+
+        else:    
+
+            this_file = f'{pth}{file_base_name}_{date_str}_UTC_{file_number:06}.h5'
+
         try:
             f = h5py.File(this_file,'r')
             this_data = np.array(
@@ -334,7 +352,10 @@ def das_downloader(event_df, this_id, cab, t0 = datetime.datetime(2022, 10, 23, 
             elif t0 > datetime.datetime(2022, 10, 23, 4, 49, 0):
                 datastore = '/data/data6/whidbey/'
                 
-
+#         print(prefix)
+#         print(t0)
+#         print(datastore)
+#         print(record_length)
         data,times,attrs = open_sintela_file(prefix,
                                              t0,
                                              datastore,
@@ -349,6 +370,12 @@ def das_downloader(event_df, this_id, cab, t0 = datetime.datetime(2022, 10, 23, 
         data_filt = filtfilt(b,a,data,axis=0)
 
     except Exception as e:
+#         print(data)
+#         print(times)
+#         print(dates)
+#         print(attrs)
+#         print(x_max)
+#         print(data_filt)
         print(f'caught {type(e)}: e')
         data = None
         times = None
